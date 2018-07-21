@@ -3,6 +3,8 @@ package cn.johnyu.easyspring.servlet;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -36,16 +38,20 @@ public class DispatcherServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		RequestInfo info = parseRequestInfo(req);
+		RequestInfo requestInfo = parseRequestInfo(req);
 
-		HandlerMethod handlerMethod = handlerMapping.getMapping().get(info);
+		HandlerMethod handlerMethod = handlerMapping.getMapping().get(requestInfo);
 		HandlerExecutionChain chain = handlerMapping.getExecutoinChain();
+		req.setAttribute("handlerMethod", handlerMethod);
 		try {
 			// 前置拦截方法
 			for (HandlerInterceptor interc : chain.getInterceptors())
 				interc.preHandle(req, resp, handlerMethod.getHandler());
+			
+			//调用Handler的处理方法（核心处理）
 			adapter.setHandlerMethod(handlerMethod);
 			ModelAndView mv = adapter.process();
+			
 			// 后置拦截方法
 			for (HandlerInterceptor interc : chain.getInterceptors())
 				interc.postHandle(req, resp, handlerMethod.getHandler(), mv);

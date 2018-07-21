@@ -11,9 +11,16 @@ public class HandlerAdapter {
 	public ModelAndView process() {
 		Method method=handlerMethod.getMethod();
 		Object handler=handlerMethod.getHandler();
-		String view="";
+		Model model=null;
+		String viewName="";
+		for(Object o:handlerMethod.getActualParams()) {
+			if(o instanceof Model) {
+				model=(Model)o;
+				break;
+			}
+		}
 		try {
-			view = (String)method.invoke(handler,handlerMethod.getActualParams().toArray());
+			viewName = (String)method.invoke(handler,handlerMethod.getActualParams().toArray());
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -21,8 +28,8 @@ public class HandlerAdapter {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		Model model=new Model();
-		ModelAndView mv=new ModelAndView(model, view);
+		
+		ModelAndView mv=new ModelAndView(model, viewName);
 		return mv;
 	}
 }

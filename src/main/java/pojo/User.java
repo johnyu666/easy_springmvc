@@ -6,6 +6,14 @@ public class User {
 	private boolean sex;
 	private int age;
 	
+	public User(Integer id, String uname, boolean sex, int age) {
+		super();
+		this.id = id;
+		this.uname = uname;
+		this.sex = sex;
+		this.age = age;
+	}
+
 	public Integer getId() {
 		return id;
 	}
